@@ -171,6 +171,9 @@ function table_exist(){
     if(err){
       console.log("TABLE DOES NOT EXIST");
       console.log(err);
+      nyse_get().then(function (tickers) {
+        storeTickers(tickers);
+      });
     }
     else{
       console.log("TABLE EXISTS...");
