@@ -204,6 +204,7 @@ app.get("/list", (req, res) => {
       console.log(res.rows);
       res.send(res.rows);
     }
+  });
 });
 
 app.listen(port, function () {
