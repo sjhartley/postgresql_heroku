@@ -18,6 +18,12 @@ const pool = new Pool({
 // });
 
 const axios = require("axios");
+const express = require("express");
+const bodyParser = require("body-parser");
+const port = process.env.PORT || 5000;
+const cors = require("cors");
+const app = express();
+
 
 var get_options = {
   method: "GET",
@@ -183,6 +189,22 @@ function table_exist(){
 }
 
 table_exist();
+
+app.use(bodyParser.urlencoded({ extended: false }));
+
+app.get("/list", (req, res) => {
+  pool.query("SELECT * from tickers;", function(err, res){
+    if(err){
+      console.log("TABLE DOES NOT EXIST");
+      console.log(err);
+      res.send("TABLE DOES NOT EXIST");
+    }
+    else{
+      console.log("TABLE EXISTS...");
+      console.log(res.rows);
+      res.send(res.rows);
+    }
+});
 
 // nyse_get().then(function (tickers) {
 //   storeTickers(tickers);
