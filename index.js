@@ -206,6 +206,10 @@ app.get("/list", (req, res) => {
     }
 });
 
+app.listen(port, function () {
+  console.log(`server running at port: ${port}`);
+});
+
 // nyse_get().then(function (tickers) {
 //   storeTickers(tickers);
 // });
