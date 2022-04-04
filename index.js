@@ -193,7 +193,7 @@ table_exist();
 app.use(bodyParser.urlencoded({ extended: false }));
 
 app.get("/list", (req, res) => {
-  pool.query("SELECT * from tickers;", function(err, res){
+  pool.query("SELECT * from tickers;", function(err, query_res){
     if(err){
       console.log("TABLE DOES NOT EXIST");
       console.log(err);
@@ -201,8 +201,8 @@ app.get("/list", (req, res) => {
     }
     else{
       console.log("TABLE EXISTS...");
-      console.log(res.rows);
-      res.send(res.rows);
+      console.log(query_res.rows);
+      res.send(query_res.rows);
     }
   });
 });
