@@ -190,6 +190,7 @@ function table_exist(){
 
 table_exist();
 
+app.use(cors());
 app.use(bodyParser.urlencoded({ extended: false }));
 
 app.get("/list", (req, res) => {
