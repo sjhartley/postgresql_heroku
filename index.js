@@ -207,6 +207,21 @@ app.get("/list", (req, res) => {
   });
 });
 
+app.get("/watchlist", (req, res) => {
+  pool.query("SELECT * from watchlist;", function(err, query_res){
+    if(err){
+      console.log("TABLE DOES NOT EXIST");
+      console.log(err);
+      res.send("TABLE DOES NOT EXIST");
+    }
+    else{
+      console.log("TABLE EXISTS...");
+      console.log(query_res.rows);
+      res.send(query_res.rows);
+    }
+  });
+});
+
 app.listen(port, function () {
   console.log(`server running at port: ${port}`);
 });
