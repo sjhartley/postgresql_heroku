@@ -259,7 +259,7 @@ function add_Watch(keyWord, exp_res){
 
           });
         }
-        pool.end();
+        //pool.end();
       });
     }
 
