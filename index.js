@@ -190,7 +190,7 @@ function table_exist(){
 
 function add_Watch(keyWord, res){
   let sql=`SELECT * FROM tickers WHERE ticker=$1`;
-  let ticker=keyWord;
+  let ticker=keyWord.toUpperCase();
 
   let prom=new Promise(function(resolve, reject){
       //check if ticker exists in tickers table
