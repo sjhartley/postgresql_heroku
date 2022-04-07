@@ -188,7 +188,7 @@ function table_exist(){
   });
 }
 
-function add_Watch(keyWord, res){
+function add_Watch(keyWord, exp_res){
   let sql=`SELECT * FROM tickers WHERE ticker=$1`;
   let ticker=keyWord.toUpperCase();
 
@@ -197,7 +197,7 @@ function add_Watch(keyWord, res){
       pool.query(sql, [ticker],(err, res) => {
         if (err) {
           console.error(`There is error, ${err.message}`);
-          res.send("Ticker does not exist in tickers table");
+          exp_res.send("Ticker does not exist in tickers table");
           reject(false);
         }
         else{
@@ -229,7 +229,7 @@ function add_Watch(keyWord, res){
           }
           else{
             console.log("Ticker does exist in watchlist table");
-            res.send("Ticker does exist in watchlist table");
+            exp_res.send("Ticker does exist in watchlist table");
             reject(false);
           }
         });
@@ -250,11 +250,11 @@ function add_Watch(keyWord, res){
           pool.query(sql, [res.name, res.ticker, res.url], function(err, res){
             if(err){
               console.log("error inserting data...");
-              res.send("error inserting data...")
+              exp_res.send("error inserting data...")
             }
             else{
               console.log("INSERTION SUCCESSFUL...");
-              res.send("INSERTION SUCCESSFUL...")
+              exp_res.send("INSERTION SUCCESSFUL...")
             }
             pool.end();
           });
