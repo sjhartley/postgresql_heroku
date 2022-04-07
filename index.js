@@ -310,6 +310,7 @@ app.get("/watchlist", (req, res) => {
 
 app.post("/add", (req, res) => {
   console.log(req.body.keyWord);
+  add_Watch(req.body.keyWord, res);
 });
 
 app.post("/delete", (req, res) => {
