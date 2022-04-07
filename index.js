@@ -236,7 +236,7 @@ function add_Watch(keyWord, exp_res){
       }).catch(function(rej){
         console.log("rej");
         console.log(rej);
-        pool.end();
+        //pool.end();
         return false;
       });
 
@@ -256,9 +256,10 @@ function add_Watch(keyWord, exp_res){
               console.log("INSERTION SUCCESSFUL...");
               exp_res.send("INSERTION SUCCESSFUL...")
             }
-            pool.end();
+
           });
         }
+        pool.end();
       });
     }
 
