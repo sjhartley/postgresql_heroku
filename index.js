@@ -197,6 +197,7 @@ function add_Watch(keyWord, res){
       pool.query(sql, [ticker],(err, res) => {
         if (err) {
           console.error(`There is error, ${err.message}`);
+          res.send("Ticker does not exist in tickers table");
           reject(false);
         }
         else{
@@ -206,61 +207,62 @@ function add_Watch(keyWord, res){
   });
 
   prom.then(function(res){
-    //console.log(res.rows);
-    //console.log("hello");
+    if(res !== false){
+      //console.log(res.rows);
+      //console.log("hello");
 
-    var tickerObj=res.rows[0];
-    console.log(tickerObj);
+      var tickerObj=res.rows[0];
+      console.log(tickerObj);
 
-    pool.query("CREATE TABLE if not exists watchlist (name TEXT, ticker TEXT, url TEXT)");
-    let sql=`SELECT * FROM watchlist WHERE ticker=$1`;
-    let ticker=tickerObj.ticker;
-    console.log(`ticker=${ticker}`);
+      pool.query("CREATE TABLE if not exists watchlist (name TEXT, ticker TEXT, url TEXT)");
+      let sql=`SELECT * FROM watchlist WHERE ticker=$1`;
+      let ticker=tickerObj.ticker;
+      console.log(`ticker=${ticker}`);
 
-    let prom1=new Promise(function(resolve, reject){
-      pool.query(`SELECT * FROM watchlist WHERE ticker=$1`, [tickerObj.ticker], function(err, res){
-        console.log(res);
-        console.log(res.rows.length);
-        if(res.rows.length === 0){
-          console.log("Error, ticker does not exist in watchlist table");
-          resolve(tickerObj);
-        }
-        else{
-          console.log("Ticker does exist in watchlist table");
-          res.send("Ticker does exist in watchlist table");
-          reject(false);
-        }
-      });
-    }).catch(function(rej){
-      console.log("rej");
-      console.log(rej);
-      pool.end();
-      return false;
-    });
-
-    prom1.then(function(res){
-      console.log("res....");
-      console.log(res);
-
-      if(res !== false){
-        var sql=`INSERT INTO watchlist(name, ticker, url)VALUES($1,$2,$3)`;
-        console.log(res.name, res.ticker, res.url);
-        pool.query(sql, [res.name, res.ticker, res.url], function(err, res){
-          if(err){
-            console.log("error inserting data...");
-            res.send("error inserting data...")
+      let prom1=new Promise(function(resolve, reject){
+        pool.query(`SELECT * FROM watchlist WHERE ticker=$1`, [tickerObj.ticker], function(err, res){
+          console.log(res);
+          console.log(res.rows.length);
+          if(res.rows.length === 0){
+            console.log("Error, ticker does not exist in watchlist table");
+            resolve(tickerObj);
           }
           else{
-            console.log("INSERTION SUCCESSFUL...");
-            res.send("INSERTION SUCCESSFUL...")
+            console.log("Ticker does exist in watchlist table");
+            res.send("Ticker does exist in watchlist table");
+            reject(false);
           }
-          pool.end();
         });
-      }
-    });
+      }).catch(function(rej){
+        console.log("rej");
+        console.log(rej);
+        pool.end();
+        return false;
+      });
 
+      prom1.then(function(res){
+        console.log("res....");
+        console.log(res);
 
-    //pool.end();
+        if(res !== false){
+          var sql=`INSERT INTO watchlist(name, ticker, url)VALUES($1,$2,$3)`;
+          console.log(res.name, res.ticker, res.url);
+          pool.query(sql, [res.name, res.ticker, res.url], function(err, res){
+            if(err){
+              console.log("error inserting data...");
+              res.send("error inserting data...")
+            }
+            else{
+              console.log("INSERTION SUCCESSFUL...");
+              res.send("INSERTION SUCCESSFUL...")
+            }
+            pool.end();
+          });
+        }
+      });
+    }
+
+      //pool.end();
   });
 
 
