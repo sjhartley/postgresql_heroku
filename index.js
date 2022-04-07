@@ -391,6 +391,7 @@ app.post("/add", (req, res) => {
 
 app.post("/delete", (req, res) => {
     console.log(req.body.keyWord);
+    del_Watch(req.body.keyWord, res);
 });
 
 app.listen(port, function () {
