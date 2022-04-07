@@ -207,7 +207,7 @@ function add_Watch(keyWord, res){
   });
 
   prom.then(function(res){
-    if(res !== false){
+    if((res !== false) && (typeof res.rows[0] !== 'undefined')){
       //console.log(res.rows);
       //console.log("hello");
 
