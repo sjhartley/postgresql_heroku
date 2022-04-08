@@ -192,7 +192,7 @@ function add_Watch(keyWord, exp_res){
   let sql=`SELECT * FROM tickers WHERE ticker=$1`;
   let ticker=keyWord.toUpperCase();
 
-  let prom=new Promise(function(resolve, reject){
+  let tickerTableprom=new Promise(function(resolve, reject){
       //check if ticker exists in tickers table
       pool.query(sql, [ticker],(err, res) => {
         if (err) {
@@ -206,7 +206,7 @@ function add_Watch(keyWord, exp_res){
       });
   });
 
-  prom.then(function(res){
+  tickerTableprom.then(function(res){
     if((res !== false) && (typeof res.rows[0] !== 'undefined')){
       //console.log(res.rows);
       //console.log("hello");
@@ -219,7 +219,7 @@ function add_Watch(keyWord, exp_res){
       let ticker=tickerObj.ticker;
       console.log(`ticker=${ticker}`);
 
-      let prom1=new Promise(function(resolve, reject){
+      let watchlistTableprom=new Promise(function(resolve, reject){
         pool.query(`SELECT * FROM watchlist WHERE ticker=$1`, [tickerObj.ticker], function(err, res){
           console.log(res);
           console.log(res.rows.length);
@@ -240,7 +240,7 @@ function add_Watch(keyWord, exp_res){
         return false;
       });
 
-      prom1.then(function(res){
+      watchlistTableprom.then(function(res){
         console.log("res....");
         console.log(res);
 
