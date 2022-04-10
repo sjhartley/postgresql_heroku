@@ -184,6 +184,7 @@ function nyse_get(keyWord, exp_res){
   }).then(function(response){
     console.log("\n\n\n\nRESULT\n\n");
     console.log(response);
+    resolve(response);
   });
 
 }
