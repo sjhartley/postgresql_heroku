@@ -116,69 +116,68 @@ function nyse_get(keyWord, exp_res){
         exp_res.send("Ticker does not exist in tickers table");
       }
       else{
-        exp_res.send(`${ticker} exists in tickers table...`);
-        //exp_res.send(res.rows[0]);
-        // console.log(`Ticker ${ticker} has been found...`);
-        // //this url is used to obtain the authentication key
-        // var td_url="https://www.nyse.com/api/idc/td";
-        //
-        // //to authenticate we must insert the key into the authentication url
-        // var authUrl_start="https://nyse.widgets.dataservices.theice.com/Login?auth=";
-        // var authUrl_end="&browser=false&client=mobile&callback=__gwt_jsonp__.P0.onSuccess";
-        //
-        // axios.get(td_url).then(function(response){
-        //   var data=response.data;
-        //   console.log(response.headers);
-        //   var auth=data['td'].toString().split('=')[0];
-        //   var search_chars=['/', '\\+'];
-        //   console.log(auth);
-        //
-        //   //the authentication key needs to be encoded before it can be used
-        //   auth=encodeURIComponent(auth);
-        //
-        //   console.log(`auth=${auth}`);
-        //   //insert the encoded authentication key
-        //   var auth_url=`${authUrl_start}${auth}${authUrl_end}`;
-        //   console.log(`auth_url: ${auth_url}`);
-        //
-        //   get_options.url=auth_url;
-        //
-        //   axios(get_options).then(function(response){
-        //     var data=response.data.toString();
-        //     console.log(data);
-        //     //obtain cbid
-        //     var cbid=data.split('"cbid":')[1].split('"')[1];
-        //     console.log(cbid);
-        //     var search_chars=['/', '\\+'];
-        //     //obtain session key
-        //     var session_key=encodeURIComponent(data.split('"webserversession":')[1].split('"')[1].split(',')[1].split('=')[0], search_chars);
-        //     console.log(session_key);
-        //
-        //     let promises=[];
-        //
-        //     var datasets=["MQ_Fundamentals", "DividendsHistory"];
-        //     for(var i=0; i<datasets.length; i++){
-        //       console.log(`datasets=${datasets[i]}\n\n\n`);
-        //       promises.push(dataset_fetch(datasets[i], ticker, session_key, cbid));
-        //     }
-        //
-        //     promises.push(snapshot_get(ticker, session_key, cbid));
-        //
-        //     Promise.all(promises).then(function(result){
-        //       console.log(result);
-        //       console.log("sending...");
-        //       //exp_res.send(result);
-        //       resolve(result);
-        //     });
+        exp_res.send(res.rows[0]);
+        console.log(`Ticker ${ticker} has been found...`);
+        //this url is used to obtain the authentication key
+        var td_url="https://www.nyse.com/api/idc/td";
 
-        //   }).catch(function(err){
-        //     exp_res.send("CANNOT ACCESS DATA AT THIS TIME");
-        //     return false;
-        //   });;
-        // }).catch(function(err){
-        //   exp_res.send("CANNOT ACCESS DATA AT THIS TIME");
-        //   return false;
-        // });;
+        //to authenticate we must insert the key into the authentication url
+        var authUrl_start="https://nyse.widgets.dataservices.theice.com/Login?auth=";
+        var authUrl_end="&browser=false&client=mobile&callback=__gwt_jsonp__.P0.onSuccess";
+
+        axios.get(td_url).then(function(response){
+          var data=response.data;
+          console.log(response.headers);
+          var auth=data['td'].toString().split('=')[0];
+          var search_chars=['/', '\\+'];
+          console.log(auth);
+
+          //the authentication key needs to be encoded before it can be used
+          auth=encodeURIComponent(auth);
+
+          console.log(`auth=${auth}`);
+          //insert the encoded authentication key
+          var auth_url=`${authUrl_start}${auth}${authUrl_end}`;
+          console.log(`auth_url: ${auth_url}`);
+
+          get_options.url=auth_url;
+
+          axios(get_options).then(function(response){
+            var data=response.data.toString();
+            console.log(data);
+            //obtain cbid
+            var cbid=data.split('"cbid":')[1].split('"')[1];
+            console.log(cbid);
+            var search_chars=['/', '\\+'];
+            //obtain session key
+            var session_key=encodeURIComponent(data.split('"webserversession":')[1].split('"')[1].split(',')[1].split('=')[0], search_chars);
+            console.log(session_key);
+
+            let promises=[];
+
+            var datasets=["MQ_Fundamentals", "DividendsHistory"];
+            for(var i=0; i<datasets.length; i++){
+              console.log(`datasets=${datasets[i]}\n\n\n`);
+              promises.push(dataset_fetch(datasets[i], ticker, session_key, cbid));
+            }
+
+            promises.push(snapshot_get(ticker, session_key, cbid));
+
+            Promise.all(promises).then(function(result){
+              console.log(result);
+              console.log("sending...");
+              //exp_res.send(result);
+              resolve(result);
+            });
+
+          }).catch(function(err){
+            exp_res.send("CANNOT ACCESS DATA AT THIS TIME");
+            return false;
+          });;
+        }).catch(function(err){
+          exp_res.send("CANNOT ACCESS DATA AT THIS TIME");
+          return false;
+        });;
       }
     });
 
