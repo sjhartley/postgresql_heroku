@@ -171,14 +171,14 @@ function nyse_get(keyWord, exp_res){
         //       resolve(result);
         //     });
 
-          }).catch(function(err){
-            exp_res.send("CANNOT ACCESS DATA AT THIS TIME");
-            return false;
-          });;
-        }).catch(function(err){
-          exp_res.send("CANNOT ACCESS DATA AT THIS TIME");
-          return false;
-        });;
+        //   }).catch(function(err){
+        //     exp_res.send("CANNOT ACCESS DATA AT THIS TIME");
+        //     return false;
+        //   });;
+        // }).catch(function(err){
+        //   exp_res.send("CANNOT ACCESS DATA AT THIS TIME");
+        //   return false;
+        // });;
       }
     });
 
