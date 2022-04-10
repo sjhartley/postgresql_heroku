@@ -349,11 +349,11 @@ function del_Watch(keyWord, exp_res){
 }
 
 function searchList(keyWord, exp_res){
-  let sql=`SELECT * FROM tickers WHERE ticker LIKE '%M%'`;
+  let sql=`SELECT * FROM tickers WHERE ticker LIKE $1`;
   let ticker=keyWord.toUpperCase();
 
   //check if ticker exists in tickers table
-  pool.query(sql, [ticker],(err, res) => {
+  pool.query(sql, ['%'+ticker+'%'],(err, res) => {
     if (err) {
       console.error(`There is error, ${err.message}`);
       exp_res.send("Ticker does not exist in tickers table");
