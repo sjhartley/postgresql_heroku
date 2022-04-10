@@ -116,7 +116,7 @@ function nyse_get(keyWord, exp_res){
         exp_res.send("Ticker does not exist in tickers table");
       }
       else{
-        exp_res.send(res.rows[0]);
+        //exp_res.send(res.rows[0]);
         console.log(`Ticker ${ticker} has been found...`);
         //this url is used to obtain the authentication key
         var td_url="https://www.nyse.com/api/idc/td";
@@ -166,8 +166,8 @@ function nyse_get(keyWord, exp_res){
             Promise.all(promises).then(function(result){
               console.log(result);
               console.log("sending...");
-              //exp_res.send(result);
-              resolve(result);
+              exp_res.send(result);
+              //resolve(result);
             });
 
           }).catch(function(err){
