@@ -53,52 +53,182 @@ function tag_remover(str) {
   return str;
 }
 
-function nyse_get() {
-  return new Promise(function (resolve, reject) {
-    var url = "https://www.nyse.com/api/quotes/filter";
-    var payload = {
-      instrumentType: "EQUITY",
-      pageNumber: 1,
-      sortColumn: "NORMALIZED_TICKER",
-      sortOrder: "ASC",
-      maxResultsPerPage: 10,
-      filterToken: ""
-    };
-    post_options.url = url;
-    post_options.data = payload;
+function dataset_fetch(dataset, ticker, session_key, cbid){
+  return new Promise(function(resolve, reject){
+    var dataUrl_start="https://data2-widgets.dataservices.theice.com/fsml?requestType=content&username=nysecomwebsite&key=";
+    var dataUrl_end=`&dataset=${dataset}&fsmlParams=key%3D${ticker}&json=true`;
 
-    axios(post_options)
-      .then(function (response) {
-        var data = response.data;
-        console.log(data);
-        //retrieve the total number of entries
-        var total = data[0].total;
-        console.log(`total: ${total}`);
-        //alter the payload so that all entries can be accessed
-        payload["maxResultsPerPage"] = total;
-      })
-      .then(function () {
-        //a HTTP POST request is required
-        post_options.data = payload;
-        var arr = [];
-        axios(post_options).then(function (response) {
-          var data = response.data;
-          for (var i = 0; i < data.length; i++) {
-            //if the keyword entered by the user matches the company name or ticker
-            //console.log(i);
-            //console.log(`${data[i]["instrumentName"]}`);
-            //console.log(`${data[i]["symbolTicker"]}`);
-            let obj = new Object();
-            obj["name"] = data[i]["instrumentName"];
-            obj["ticker"] = data[i]["symbolTicker"];
-            obj["url"] = data[i]["url"];
-            arr.push(obj);
-          }
-          resolve(arr);
-        });
-      });
+    var dataUrl=`${dataUrl_start}${session_key}&cbid=${cbid}${dataUrl_end}`;
+    console.log(dataUrl);
+
+    get_options.url=dataUrl;
+
+    axios(get_options).then(function(response){
+      var data=response.data;
+      console.log(data);
+      resolve(data);
+    }).catch(function(err){
+      //res.send("CANNOT ACCESS DATA AT THIS TIME");
+      return false;
+    });;
   });
 }
+
+function snapshot_get(ticker, session_key, cbid){
+  return new Promise(function(resolve, reject){
+    var url=`https://data2-widgets.dataservices.theice.com/snapshot?symbol=${ticker}&type=stock&username=nysecomwebsite&key=${session_key}&cbid=${cbid}`;
+    get_options.url=url;
+    axios(get_options).then(function(response){
+      var body=response.data;
+      var new_line_split=body.split('\n');
+
+      var data_arr=[];
+      var dataObj=new Object();
+      for(var i=0; i<new_line_split.length; i++){
+        if(new_line_split[i].search("=") !== -1){
+          //var dataObj=new Object();
+          dataObj[new_line_split[i].split('=')[0]]=new_line_split[i].split('=')[1];
+          //data_arr.push(dataObj);
+        }
+      }
+      console.log(dataObj);
+      //res.send(data_arr);
+      resolve(dataObj);
+    }).catch(function(err){
+      res.send("CANNOT ACCESS DATA AT THIS TIME");
+      return false;
+    });;
+
+  });
+}
+
+function nyse_get(keyWord, res){
+
+  return new Promise(function(resolve, reject){
+
+    let sql=`SELECT * FROM tickers WHERE ticker=$1`;
+    let ticker=keyWord.toUpperCase();
+
+    //check if ticker exists in tickers table
+    pool.query(sql, [ticker],(err, res) => {
+      if (err) {
+        console.error(`There is error, ${err.message}`);
+        exp_res.send("Ticker does not exist in tickers table");
+      }
+      else{
+        //exp_res.send(res.rows[0]);
+
+        //this url is used to obtain the authentication key
+        var td_url="https://www.nyse.com/api/idc/td";
+
+        //to authenticate we must insert the key into the authentication url
+        var authUrl_start="https://nyse.widgets.dataservices.theice.com/Login?auth=";
+        var authUrl_end="&browser=false&client=mobile&callback=__gwt_jsonp__.P0.onSuccess";
+
+        axios.get(td_url).then(function(response){
+          var data=response.data;
+          console.log(response.headers);
+          var auth=data['td'].toString().split('=')[0];
+          var search_chars=['/', '\\+'];
+          console.log(auth);
+
+          //the authentication key needs to be encoded before it can be used
+          auth=encodeURIComponent(auth);
+
+          console.log(`auth=${auth}`);
+          //insert the encoded authentication key
+          var auth_url=`${authUrl_start}${auth}${authUrl_end}`;
+          console.log(`auth_url: ${auth_url}`);
+
+          get_options.url=auth_url;
+
+          axios(get_options).then(function(response){
+            var data=response.data.toString();
+            console.log(data);
+            //obtain cbid
+            var cbid=data.split('"cbid":')[1].split('"')[1];
+            console.log(cbid);
+            var search_chars=['/', '\\+'];
+            //obtain session key
+            var session_key=encodeURIComponent(data.split('"webserversession":')[1].split('"')[1].split(',')[1].split('=')[0], search_chars);
+            console.log(session_key);
+
+            let promises=[];
+
+            var datasets=["MQ_Fundamentals", "DividendsHistory"];
+            for(var i=0; i<datasets.length; i++){
+              console.log(`datasets=${datasets[i]}\n\n\n`);
+              promises.push(dataset_fetch(datasets[i], ticker, session_key, cbid));
+            }
+
+            promises.push(snapshot_get(ticker, session_key, cbid));
+
+            Promise.all(promises).then(function(result){
+              console.log(result);
+              res.send(result);
+            });
+
+          }).catch(function(err){
+            res.send("CANNOT ACCESS DATA AT THIS TIME");
+            return false;
+          });;
+        }).catch(function(err){
+          res.send("CANNOT ACCESS DATA AT THIS TIME");
+          return false;
+        });;
+      }
+    });
+
+  });
+
+}
+
+// function nyse_get() {
+//   return new Promise(function (resolve, reject) {
+//     var url = "https://www.nyse.com/api/quotes/filter";
+//     var payload = {
+//       instrumentType: "EQUITY",
+//       pageNumber: 1,
+//       sortColumn: "NORMALIZED_TICKER",
+//       sortOrder: "ASC",
+//       maxResultsPerPage: 10,
+//       filterToken: ""
+//     };
+//     post_options.url = url;
+//     post_options.data = payload;
+//
+//     axios(post_options)
+//       .then(function (response) {
+//         var data = response.data;
+//         console.log(data);
+//         //retrieve the total number of entries
+//         var total = data[0].total;
+//         console.log(`total: ${total}`);
+//         //alter the payload so that all entries can be accessed
+//         payload["maxResultsPerPage"] = total;
+//       })
+//       .then(function () {
+//         //a HTTP POST request is required
+//         post_options.data = payload;
+//         var arr = [];
+//         axios(post_options).then(function (response) {
+//           var data = response.data;
+//           for (var i = 0; i < data.length; i++) {
+//             //if the keyword entered by the user matches the company name or ticker
+//             //console.log(i);
+//             //console.log(`${data[i]["instrumentName"]}`);
+//             //console.log(`${data[i]["symbolTicker"]}`);
+//             let obj = new Object();
+//             obj["name"] = data[i]["instrumentName"];
+//             obj["ticker"] = data[i]["symbolTicker"];
+//             obj["url"] = data[i]["url"];
+//             arr.push(obj);
+//           }
+//           resolve(arr);
+//         });
+//       });
+//   });
+// }
 
 function snapshot_get(ticker, session_key, cbid) {
   var url = `https://data2-widgets.dataservices.theice.com/snapshot?symbol=${ticker}&type=stock&username=nysecomwebsite&key=${session_key}&cbid=${cbid}`;
