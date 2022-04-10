@@ -348,6 +348,22 @@ function del_Watch(keyWord, exp_res){
   });
 }
 
+function searchList(keyWord, exp_res){
+  let sql=`SELECT * FROM tickers WHERE ticker=$1`;
+  let ticker=keyWord.toUpperCase();
+
+  //check if ticker exists in tickers table
+  pool.query(sql, [ticker],(err, res) => {
+    if (err) {
+      console.error(`There is error, ${err.message}`);
+      exp_res.send("Ticker does not exist in tickers table");
+    }
+    else{
+      exp_res.send(res.rows);
+    }
+  });
+}
+
 
 table_exist();
 
@@ -392,6 +408,11 @@ app.post("/add", (req, res) => {
 app.post("/delete", (req, res) => {
     console.log(req.body.keyWord);
     del_Watch(req.body.keyWord, res);
+});
+
+app.post("/search", (req, res) => {
+    console.log(req.body.keyWord);
+    searchList(req.body.keyWord, res);
 });
 
 app.listen(port, function () {
