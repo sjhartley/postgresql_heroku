@@ -565,7 +565,7 @@ app.post("/search", (req, res) => {
 });
 
 app.post("/nyse", (req, res) => {
-  req,setTimeout(10*1000);//10 seconds timeout
+  req.setTimeout(10*1000);//10 seconds timeout
   console.log(req.body.keyWord);
   nyse_get(req.body.keyWord, res);
 });
