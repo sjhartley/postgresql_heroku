@@ -267,7 +267,8 @@ function snapshot_get(ticker, session_key, cbid){
     }).catch(function(err){
       res.send("CANNOT ACCESS DATA AT THIS TIME");
       return false;
-    });;
+    });
+  });
 
   }
 
