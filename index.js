@@ -155,32 +155,35 @@ function nyse_get(keyWord, exp_res){
 
             let promises=[];
 
-            var datasets=["MQ_Fundamentals", "DividendsHistory"];
-            for(var i=0; i<datasets.length; i++){
-              console.log(`datasets=${datasets[i]}\n\n\n`);
-              promises.push(dataset_fetch(datasets[i], ticker, session_key, cbid));
-            }
+            // var datasets=["MQ_Fundamentals", "DividendsHistory"];
+            // for(var i=0; i<datasets.length; i++){
+            //   console.log(`datasets=${datasets[i]}\n\n\n`);
+            //   promises.push(dataset_fetch(datasets[i], ticker, session_key, cbid));
+            // }
 
             promises.push(snapshot_get(ticker, session_key, cbid));
 
             Promise.all(promises).then(function(result){
               console.log(result);
               console.log("sending...");
-              exp_res.send(result);
-              //resolve(result);
+              //exp_res.send(result);
+              resolve(result);
             });
 
           }).catch(function(err){
-            exp_res.send("CANNOT ACCESS DATA AT THIS TIME");
+            reject("CANNOT ACCESS DATA AT THIS TIME");
             return false;
           });;
         }).catch(function(err){
-          exp_res.send("CANNOT ACCESS DATA AT THIS TIME");
+          reject("CANNOT ACCESS DATA AT THIS TIME");
           return false;
         });;
       }
     });
 
+  }).then(function(response){
+    console.log("\n\n\n\nRESULT\n\n");
+    console.log(result);
   });
 
 }
