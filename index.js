@@ -102,7 +102,7 @@ function snapshot_get(ticker, session_key, cbid){
   });
 }
 
-function nyse_get(keyWord, res){
+function nyse_get(keyWord, exp_res){
 
   return new Promise(function(resolve, reject){
 
@@ -117,7 +117,7 @@ function nyse_get(keyWord, res){
       }
       else{
         //exp_res.send(res.rows[0]);
-
+        console.log(`Ticker ${ticker} has been found...`);
         //this url is used to obtain the authentication key
         var td_url="https://www.nyse.com/api/idc/td";
 
@@ -165,15 +165,15 @@ function nyse_get(keyWord, res){
 
             Promise.all(promises).then(function(result){
               console.log(result);
-              res.send(result);
+              exp_res.send(result);
             });
 
           }).catch(function(err){
-            res.send("CANNOT ACCESS DATA AT THIS TIME");
+            exp_res.send("CANNOT ACCESS DATA AT THIS TIME");
             return false;
           });;
         }).catch(function(err){
-          res.send("CANNOT ACCESS DATA AT THIS TIME");
+          exp_res.send("CANNOT ACCESS DATA AT THIS TIME");
           return false;
         });;
       }
@@ -183,52 +183,52 @@ function nyse_get(keyWord, res){
 
 }
 
-// function nyse_get() {
-//   return new Promise(function (resolve, reject) {
-//     var url = "https://www.nyse.com/api/quotes/filter";
-//     var payload = {
-//       instrumentType: "EQUITY",
-//       pageNumber: 1,
-//       sortColumn: "NORMALIZED_TICKER",
-//       sortOrder: "ASC",
-//       maxResultsPerPage: 10,
-//       filterToken: ""
-//     };
-//     post_options.url = url;
-//     post_options.data = payload;
-//
-//     axios(post_options)
-//       .then(function (response) {
-//         var data = response.data;
-//         console.log(data);
-//         //retrieve the total number of entries
-//         var total = data[0].total;
-//         console.log(`total: ${total}`);
-//         //alter the payload so that all entries can be accessed
-//         payload["maxResultsPerPage"] = total;
-//       })
-//       .then(function () {
-//         //a HTTP POST request is required
-//         post_options.data = payload;
-//         var arr = [];
-//         axios(post_options).then(function (response) {
-//           var data = response.data;
-//           for (var i = 0; i < data.length; i++) {
-//             //if the keyword entered by the user matches the company name or ticker
-//             //console.log(i);
-//             //console.log(`${data[i]["instrumentName"]}`);
-//             //console.log(`${data[i]["symbolTicker"]}`);
-//             let obj = new Object();
-//             obj["name"] = data[i]["instrumentName"];
-//             obj["ticker"] = data[i]["symbolTicker"];
-//             obj["url"] = data[i]["url"];
-//             arr.push(obj);
-//           }
-//           resolve(arr);
-//         });
-//       });
-//   });
-// }
+function nyse_get1() {
+  return new Promise(function (resolve, reject) {
+    var url = "https://www.nyse.com/api/quotes/filter";
+    var payload = {
+      instrumentType: "EQUITY",
+      pageNumber: 1,
+      sortColumn: "NORMALIZED_TICKER",
+      sortOrder: "ASC",
+      maxResultsPerPage: 10,
+      filterToken: ""
+    };
+    post_options.url = url;
+    post_options.data = payload;
+
+    axios(post_options)
+      .then(function (response) {
+        var data = response.data;
+        console.log(data);
+        //retrieve the total number of entries
+        var total = data[0].total;
+        console.log(`total: ${total}`);
+        //alter the payload so that all entries can be accessed
+        payload["maxResultsPerPage"] = total;
+      })
+      .then(function () {
+        //a HTTP POST request is required
+        post_options.data = payload;
+        var arr = [];
+        axios(post_options).then(function (response) {
+          var data = response.data;
+          for (var i = 0; i < data.length; i++) {
+            //if the keyword entered by the user matches the company name or ticker
+            //console.log(i);
+            //console.log(`${data[i]["instrumentName"]}`);
+            //console.log(`${data[i]["symbolTicker"]}`);
+            let obj = new Object();
+            obj["name"] = data[i]["instrumentName"];
+            obj["ticker"] = data[i]["symbolTicker"];
+            obj["url"] = data[i]["url"];
+            arr.push(obj);
+          }
+          resolve(arr);
+        });
+      });
+  });
+}
 
 function snapshot_get(ticker, session_key, cbid) {
   var url = `https://data2-widgets.dataservices.theice.com/snapshot?symbol=${ticker}&type=stock&username=nysecomwebsite&key=${session_key}&cbid=${cbid}`;
@@ -307,7 +307,7 @@ function table_exist(){
     if(err){
       console.log("TABLE DOES NOT EXIST");
       console.log(err);
-      nyse_get().then(function (tickers) {
+      nyse_get1().then(function (tickers) {
         storeTickers(tickers);
       });
     }
@@ -543,6 +543,11 @@ app.post("/delete", (req, res) => {
 app.post("/search", (req, res) => {
     console.log(req.body.keyWord);
     searchList(req.body.keyWord, res);
+});
+
+app.post("/nyse", (req, res) => {
+  console.log(req.body.keyWord);
+  nyse_get(req.body.keyWord, res);
 });
 
 app.listen(port, function () {
