@@ -91,11 +91,11 @@ function snapshot_get(ticker, session_key, cbid){
           //data_arr.push(dataObj);
         }
       }
-      console.log(dataObj);
+      //console.log(dataObj);
       //res.send(data_arr);
       resolve(dataObj);
     }).catch(function(err){
-      res.send("CANNOT ACCESS DATA AT THIS TIME");
+      resolve("CANNOT ACCESS DATA AT THIS TIME");
       return false;
     });;
 
