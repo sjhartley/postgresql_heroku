@@ -349,7 +349,7 @@ function del_Watch(keyWord, exp_res){
 }
 
 function searchList(keyWord, exp_res){
-  let sql=`SELECT * FROM tickers WHERE ticker LIKE '%$1%')`;
+  let sql=`SELECT * FROM tickers WHERE ticker LIKE '%$1%'`;
   let ticker=keyWord.toUpperCase();
 
   //check if ticker exists in tickers table
