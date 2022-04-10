@@ -104,8 +104,6 @@ function snapshot_get(ticker, session_key, cbid){
 
 function nyse_get(keyWord, exp_res){
 
-  return new Promise(function(resolve, reject){
-
     let sql=`SELECT * FROM tickers WHERE ticker=$1`;
     let ticker=keyWord.toUpperCase();
 
@@ -127,31 +125,31 @@ function nyse_get(keyWord, exp_res){
 
         axios.get(td_url).then(function(response){
           var data=response.data;
-          console.log(response.headers);
+          //console.log(response.headers);
           var auth=data['td'].toString().split('=')[0];
           var search_chars=['/', '\\+'];
-          console.log(auth);
+          //console.log(auth);
 
           //the authentication key needs to be encoded before it can be used
           auth=encodeURIComponent(auth);
 
-          console.log(`auth=${auth}`);
+          //console.log(`auth=${auth}`);
           //insert the encoded authentication key
           var auth_url=`${authUrl_start}${auth}${authUrl_end}`;
-          console.log(`auth_url: ${auth_url}`);
+          //console.log(`auth_url: ${auth_url}`);
 
           get_options.url=auth_url;
 
           axios(get_options).then(function(response){
             var data=response.data.toString();
-            console.log(data);
+            //console.log(data);
             //obtain cbid
             var cbid=data.split('"cbid":')[1].split('"')[1];
-            console.log(cbid);
+            //console.log(cbid);
             var search_chars=['/', '\\+'];
             //obtain session key
             var session_key=encodeURIComponent(data.split('"webserversession":')[1].split('"')[1].split(',')[1].split('=')[0], search_chars);
-            console.log(session_key);
+            //console.log(session_key);
 
             let promises=[];
 
@@ -161,27 +159,33 @@ function nyse_get(keyWord, exp_res){
             //   promises.push(dataset_fetch(datasets[i], ticker, session_key, cbid));
             // }
 
-            promises.push(snapshot_get(ticker, session_key, cbid));
-
-            Promise.all(promises).then(function(result){
-              console.log(result);
-              console.log("sending...");
-              //exp_res.send(result);
-              exp_res.send(result);
+            snapshot_get(ticker, session_key, cbid).then(function(response){
+              console.log("\n\nresponse...\n");
+              console.log(response);
             });
+
+            //promises.push(snapshot_get(ticker, session_key, cbid));
+
+
+            // Promise.all(promises).then(function(result){
+            //   console.log(result);
+            //   console.log("sending...");
+            //   //exp_res.send(result);
+            //   exp_res.send(result);
+            // });
 
           }).catch(function(err){
             reject("CANNOT ACCESS DATA AT THIS TIME");
             return false;
-          });;
+          });
         }).catch(function(err){
           reject("CANNOT ACCESS DATA AT THIS TIME");
           return false;
-        });;
+        });
       }
     });
 
-  });;
+
 
 }
 
@@ -232,28 +236,40 @@ function nyse_get1() {
   });
 }
 
-function snapshot_get(ticker, session_key, cbid) {
-  var url = `https://data2-widgets.dataservices.theice.com/snapshot?symbol=${ticker}&type=stock&username=nysecomwebsite&key=${session_key}&cbid=${cbid}`;
+function snapshot_get(ticker, session_key, cbid){
+  return new Promise(function(resolve, reject){
+    var url=`https://data2-widgets.dataservices.theice.com/snapshot?symbol=${ticker}&type=stock&username=nysecomwebsite&key=${session_key}&cbid=${cbid}`;
+    get_options.url=url;
+    axios(get_options).then(function(response){
+      var body=response.data;
+      var new_line_split=body.split('\n');
 
-  get_options.url = url;
-
-  axios(get_options).then(function (response) {
-    var body = response.data;
-    var new_line_split = body.split("\n");
-
-    var data_arr = [];
-    for (var i = 0; i < new_line_split.length; i++) {
-      if (new_line_split[i].search("=") !== -1) {
-        var dataObj = new Object();
-        dataObj[new_line_split[i].split("=")[0]] = new_line_split[i].split(
-          "="
-        )[1];
-        data_arr.push(dataObj);
+      // var data_arr=[];
+      // for(var i=0; i<new_line_split.length; i++){
+      //   if(new_line_split[i].search("=") !== -1){
+      //     var dataObj=new Object();
+      //     dataObj[new_line_split[i].split('=')[0]]=new_line_split[i].split('=')[1];
+      //     data_arr.push(dataObj);
+      //   }
+      // }
+      var data_arr=[];
+      var dataObj=new Object();
+      for(var i=0; i<new_line_split.length; i++){
+        if(new_line_split[i].search("=") !== -1){
+          //var dataObj=new Object();
+          dataObj[new_line_split[i].split('=')[0]]=new_line_split[i].split('=')[1];
+          //data_arr.push(dataObj);
+        }
       }
-    }
-    console.log(data_arr);
-  });
-}
+      console.log(dataObj);
+      //res.send(data_arr);
+      resolve(dataObj);
+    }).catch(function(err){
+      res.send("CANNOT ACCESS DATA AT THIS TIME");
+      return false;
+    });;
+
+  }
 
 function dataset_fetch(dataset, ticker, session_key, cbid) {
   var dataUrl_start =
