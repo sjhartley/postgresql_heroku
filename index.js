@@ -162,6 +162,7 @@ function nyse_get(keyWord, exp_res){
             snapshot_get(ticker, session_key, cbid).then(function(response){
               console.log("\n\nresponse...\n");
               console.log(response);
+              exp_res.send(response);
             });
 
             //promises.push(snapshot_get(ticker, session_key, cbid));
@@ -175,11 +176,11 @@ function nyse_get(keyWord, exp_res){
             // });
 
           }).catch(function(err){
-            reject("CANNOT ACCESS DATA AT THIS TIME");
+            exp_res.send("CANNOT ACCESS DATA AT THIS TIME");
             return false;
           });
         }).catch(function(err){
-          reject("CANNOT ACCESS DATA AT THIS TIME");
+          exp_res.send("CANNOT ACCESS DATA AT THIS TIME");
           return false;
         });
       }
