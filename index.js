@@ -167,7 +167,7 @@ function nyse_get(keyWord, exp_res){
               console.log(result);
               console.log("sending...");
               //exp_res.send(result);
-              resolve(result);
+              exp_res.send(result);
             });
 
           }).catch(function(err){
@@ -181,11 +181,7 @@ function nyse_get(keyWord, exp_res){
       }
     });
 
-  }).then(function(response){
-    console.log("\n\n\n\nRESULT\n\n");
-    console.log(response);
-    resolve(response);
-  });
+  });;
 
 }
 
