@@ -550,6 +550,11 @@ app.get("/watchlist", (req, res) => {
   });
 });
 
+app.get("/ping", (req, res) => {
+  console.log("pong");
+  res.send("pong");
+});
+
 app.post("/add", (req, res) => {
   console.log(req.body.keyWord);
   add_Watch(req.body.keyWord, res);
