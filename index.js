@@ -338,8 +338,22 @@ function table_exist(){
   });
 }
 
+function dailyTickerListUpdate(){
+  pool.query("DROP TABLE tickers;", function(err, res){
+    if(err){
+      console.log("CANNOT remove tickers TABLE...");
+
+    }
+    else{
+      console.log("tickers TABLE removed successfully...");
+      //create new table and populate
+      table_exist();
+    }
+  });
+}
+
 function watchlistEntryCheck(){
-  //the nyse directory gets updated hence entries in the watchlist should be checked 
+  //the nyse directory gets updated hence entries in the watchlist should be checked
 }
 
 function add_Watch(keyWord, exp_res){
@@ -520,6 +534,10 @@ function searchList(keyWord, exp_res){
 
 
 table_exist();
+
+setInterval(function(){
+  dailyTickerListUpdate();
+}, 24*60*1000);
 
 app.use(cors());
 app.use(bodyParser.urlencoded({ extended: false }));
