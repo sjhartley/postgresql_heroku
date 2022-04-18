@@ -314,7 +314,7 @@ function storeTickers(tickers) {
 
         if (idx === tickers.length - 1) {
           console.log("Done...");
-          pool.end();
+          //pool.end();
         }
       }
     );
