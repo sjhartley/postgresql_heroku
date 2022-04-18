@@ -534,7 +534,6 @@ function searchList(keyWord, exp_res){
 
 
 table_exist();
-
 setInterval(function(){
   dailyTickerListUpdate();
 }, 24*60*1000);
