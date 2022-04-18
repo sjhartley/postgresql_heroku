@@ -338,6 +338,10 @@ function table_exist(){
   });
 }
 
+function watchlistEntryCheck(){
+  //the nyse directory gets updated hence entries in the watchlist should be checked 
+}
+
 function add_Watch(keyWord, exp_res){
   let sql=`SELECT * FROM tickers WHERE ticker=$1`;
   let ticker=keyWord.toUpperCase();
