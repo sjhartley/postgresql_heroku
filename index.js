@@ -474,7 +474,7 @@ function del_Watch(keyWord, exp_res){
           console.log(res.rows.length);
           if(res.rows.length !== 0){
             console.log("ticker does exist in watchlist table and needs to be deleted");
-            resolve(tickerObj);
+            resolve(ticker);
           }
           else{
             console.log("Ticker does not exist in watchlist table");
