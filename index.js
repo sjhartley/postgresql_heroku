@@ -438,38 +438,38 @@ function add_Watch(keyWord, exp_res){
 }
 
 function del_Watch(keyWord, exp_res){
-  let sql=`SELECT * FROM tickers WHERE ticker=$1`;
+  //let sql=`SELECT * FROM tickers WHERE ticker=$1`;
   let ticker=keyWord.toUpperCase();
 
-  let prom=new Promise(function(resolve, reject){
-      //check if ticker exists in tickers table
-      pool.query(sql, [ticker],(err, res) => {
-        if (err) {
-          console.error(`There is error, ${err.message}`);
-          exp_res.send("Ticker does not exist in tickers table");
-          reject(false);
-        }
-        else{
-          resolve(res);
-        }
-      });
-  });
+  // let prom=new Promise(function(resolve, reject){
+  //     //check if ticker exists in tickers table
+  //     pool.query(sql, [ticker],(err, res) => {
+  //       if (err) {
+  //         console.error(`There is error, ${err.message}`);
+  //         exp_res.send("Ticker does not exist in tickers table");
+  //         reject(false);
+  //       }
+  //       else{
+  //         resolve(res);
+  //       }
+  //     });
+  // });
 
-  prom.then(function(res){
-    if((res !== false) && (typeof res.rows[0] !== 'undefined')){
+  //prom.then(function(res){
+    //if((res !== false) && (typeof res.rows[0] !== 'undefined')){
       //console.log(res.rows);
       //console.log("hello");
 
-      var tickerObj=res.rows[0];
-      console.log(tickerObj);
+      // var tickerObj=res.rows[0];
+      // console.log(tickerObj);
 
       pool.query("CREATE TABLE if not exists watchlist (name TEXT, ticker TEXT, url TEXT)");
       let sql=`SELECT * FROM watchlist WHERE ticker=$1`;
-      let ticker=tickerObj.ticker;
+      //let ticker=tickerObj.ticker;
       console.log(`ticker=${ticker}`);
 
       let prom1=new Promise(function(resolve, reject){
-        pool.query(`SELECT * FROM watchlist WHERE ticker=$1`, [tickerObj.ticker], function(err, res){
+        pool.query(`SELECT * FROM watchlist WHERE ticker=$1`, [ticker], function(err, res){
           console.log(res);
           console.log(res.rows.length);
           if(res.rows.length !== 0){
@@ -510,10 +510,10 @@ function del_Watch(keyWord, exp_res){
         }
         //pool.end();
       });
-    }
+    //}
 
       //pool.end();
-  });
+  //});
 }
 
 function searchList(keyWord, exp_res){
