@@ -495,8 +495,9 @@ function del_Watch(keyWord, exp_res){
 
         if(res !== false){
           var sql=`DELETE FROM watchlist WHERE ticker=$1`;
-          console.log(res.name, res.ticker, res.url);
-          pool.query(sql, [res.ticker], function(err, res){
+          //console.log(res.name, res.ticker, res.url);
+          let ticker=res;
+          pool.query(sql, [ticker], function(err, res){
             if(err){
               console.log("error deleting data...");
               exp_res.send("error deleting data...")
