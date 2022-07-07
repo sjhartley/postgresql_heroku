@@ -422,7 +422,7 @@ function add_Watch(keyWord, exp_res){
             }
             else{
               console.log("INSERTION SUCCESSFUL...");
-              exp_res.send("INSERTION SUCCESSFUL...")
+              exp_res.send(true);
             }
 
           });
