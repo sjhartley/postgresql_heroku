@@ -504,7 +504,7 @@ function del_Watch(keyWord, exp_res){
             }
             else{
               console.log("DELETION SUCCESSFUL...");
-              exp_res.send("DELETION SUCCESSFUL...")
+              exp_res.send(true)
             }
 
           });
