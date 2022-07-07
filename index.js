@@ -365,13 +365,13 @@ function add_Watch(keyWord, exp_res){
       pool.query(sql, [ticker],(err, res) => {
         if (err) {
           console.error(`There is error, ${err.message}`);
-          exp_res.send("Ticker does not exist in tickers table");
+          exp_res.send(`${ticker} does not exist in listings directory`);
           reject(false);
         }
         else{
           console.log(res);
           if(res.rows.length == 0){
-            exp_res.send("Ticker does not exist in listing directory");
+            exp_res.send(`${ticker} does not exist in listing directory`);
           }
           resolve(res);
         }
@@ -396,12 +396,12 @@ function add_Watch(keyWord, exp_res){
           console.log(res);
           console.log(res.rows.length);
           if(res.rows.length === 0){
-            console.log("Error, ticker does not exist in watchlist table");
+            console.log(`${ticker} does not exist in watchlist`);
             resolve(tickerObj);
           }
           else{
             console.log("Ticker does exist in watchlist table");
-            exp_res.send("Ticker does exist in watchlist");
+            exp_res.send(`${ticker} exists in watchlist`);
             reject(false);
           }
         });
@@ -482,7 +482,7 @@ function del_Watch(keyWord, exp_res){
           }
           else{
             console.log("Ticker does not exist in watchlist table");
-            exp_res.send("Ticker does not exist in watchlist table");
+            exp_res.send(`${ticker} does not exist in watchlist`);
             reject(false);
           }
         });
