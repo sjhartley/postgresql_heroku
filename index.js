@@ -369,6 +369,7 @@ function add_Watch(keyWord, exp_res){
           reject(false);
         }
         else{
+          console.log(res);
           resolve(res);
         }
       });
