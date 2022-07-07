@@ -370,6 +370,9 @@ function add_Watch(keyWord, exp_res){
         }
         else{
           console.log(res);
+          if(res.rows.length == 0){
+            exp_res.send("Ticker does not exist in listing directory");
+          }
           resolve(res);
         }
       });
@@ -398,7 +401,7 @@ function add_Watch(keyWord, exp_res){
           }
           else{
             console.log("Ticker does exist in watchlist table");
-            exp_res.send("Ticker does exist in watchlist table");
+            exp_res.send("Ticker does exist in watchlist");
             reject(false);
           }
         });
