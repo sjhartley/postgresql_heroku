@@ -74,34 +74,6 @@ function dataset_fetch(dataset, ticker, session_key, cbid){
   });
 }
 
-// function snapshot_get(ticker, session_key, cbid){
-//   return new Promise(function(resolve, reject){
-//     var url=`https://data2-widgets.dataservices.theice.com/snapshot?symbol=${ticker}&type=stock&username=nysecomwebsite&key=${session_key}&cbid=${cbid}`;
-//     get_options.url=url;
-//     axios(get_options).then(function(response){
-//       var body=response.data;
-//       var new_line_split=body.split('\n');
-//
-//       var data_arr=[];
-//       var dataObj=new Object();
-//       for(var i=0; i<new_line_split.length; i++){
-//         if(new_line_split[i].search("=") !== -1){
-//           //var dataObj=new Object();
-//           dataObj[new_line_split[i].split('=')[0]]=new_line_split[i].split('=')[1];
-//           //data_arr.push(dataObj);
-//         }
-//       }
-//       //console.log(dataObj);
-//       //res.send(data_arr);
-//       resolve(dataObj);
-//     }).catch(function(err){
-//       resolve("CANNOT ACCESS DATA AT THIS TIME");
-//       return false;
-//     });;
-//
-//   });
-// }
-
 function nyse_get(keyWord, exp_res){
 
     let sql=`SELECT * FROM tickers WHERE ticker=$1`;
@@ -272,22 +244,6 @@ function snapshot_get(ticker, session_key, cbid){
   });
 
   }
-
-// function dataset_fetch(dataset, ticker, session_key, cbid) {
-//   var dataUrl_start =
-//     "https://data2-widgets.dataservices.theice.com/fsml?requestType=content&username=nysecomwebsite&key=";
-//   var dataUrl_end = `&dataset=${dataset}&fsmlParams=key%3D${ticker}&json=true`;
-//
-//   var dataUrl = `${dataUrl_start}${session_key}&cbid=${cbid}${dataUrl_end}`;
-//   console.log(dataUrl);
-//
-//   get_options.url = dataUrl;
-//
-//   axios(get_options).then(function (response) {
-//     var data = response.data;
-//     console.log(data);
-//   });
-// }
 
 function storeTickers(tickers) {
   //console.log(tickers);
